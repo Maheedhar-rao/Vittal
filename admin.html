@@ -470,7 +470,7 @@
                 const { data: views, error: viewsError } = await supabase
                     .from('pdf_views')
                     .select('*')
-                    .order('viewed_at', { ascending: false });
+                    .order('time', { ascending: false });
                 if (viewsError) console.error('Error loading PDF views:', viewsError);
                 pdfViews = views || [];
                 
