@@ -459,25 +459,34 @@
         async function loadInitialData() {
             try {
                 // Load email opens
-                const { data: opens } = await supabase
+                const { data: opens, error: opensError } = await supabase
                     .from('email_opens')
                     .select('*')
                     .order('opened_at', { ascending: false });
+                if (opensError) console.error('Error loading email opens:', opensError);
                 emailOpens = opens || [];
                 
                 // Load PDF views
-                const { data: views } = await supabase
+                const { data: views, error: viewsError } = await supabase
                     .from('pdf_views')
                     .select('*')
                     .order('viewed_at', { ascending: false });
+                if (viewsError) console.error('Error loading PDF views:', viewsError);
                 pdfViews = views || [];
                 
                 // Load PDF downloads
-                const { data: downloads } = await supabase
+                const { data: downloads, error: downloadsError } = await supabase
                     .from('pdf_downloads')
                     .select('*')
                     .order('downloaded_at', { ascending: false });
+                if (downloadsError) console.error('Error loading PDF downloads:', downloadsError);
                 pdfDownloads = downloads || [];
+                
+                console.log('Initial data loaded:', {
+                    emailOpens: emailOpens.length,
+                    pdfViews: pdfViews.length,
+                    pdfDownloads: pdfDownloads.length
+                });
                 
                 // Render all views
                 renderDeals();
@@ -493,11 +502,12 @@
         // Set up real-time subscriptions
         function setupRealtimeSubscriptions() {
             // Email opens subscription
-            supabase
+            const emailChannel = supabase
                 .channel('email_opens_changes')
                 .on('postgres_changes', 
                     { event: 'INSERT', schema: 'public', table: 'email_opens' },
                     (payload) => {
+                        console.log('Email open received:', payload);
                         const newOpen = payload.new;
                         emailOpens.unshift(newOpen);
                         
@@ -515,14 +525,17 @@
                         renderOpens();
                     }
                 )
-                .subscribe();
+                .subscribe((status) => {
+                    console.log('Email opens subscription status:', status);
+                });
 
             // PDF views subscription
-            supabase
+            const viewsChannel = supabase
                 .channel('pdf_views_changes')
                 .on('postgres_changes', 
                     { event: 'INSERT', schema: 'public', table: 'pdf_views' },
                     (payload) => {
+                        console.log('PDF view received:', payload);
                         const newView = payload.new;
                         pdfViews.unshift(newView);
                         
@@ -541,14 +554,17 @@
                         renderViews();
                     }
                 )
-                .subscribe();
+                .subscribe((status) => {
+                    console.log('PDF views subscription status:', status);
+                });
 
             // PDF downloads subscription
-            supabase
+            const downloadsChannel = supabase
                 .channel('pdf_downloads_changes')
                 .on('postgres_changes', 
                     { event: 'INSERT', schema: 'public', table: 'pdf_downloads' },
                     (payload) => {
+                        console.log('PDF download received:', payload);
                         const newDownload = payload.new;
                         pdfDownloads.unshift(newDownload);
                         
@@ -567,7 +583,9 @@
                         renderDownloads();
                     }
                 )
-                .subscribe();
+                .subscribe((status) => {
+                    console.log('PDF downloads subscription status:', status);
+                });
         }
 
         // Search filtering
