@@ -9,9 +9,7 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
         .container { max-width: 1400px; margin: 0 auto; }
-        h1, h2 { color: #111; }
-        h1 { margin-bottom: 20px; }
-        h2 { margin-bottom: 15px; }
+        h1 { margin-bottom: 20px; color: #111; }
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
         .tab { padding: 10px 20px; background: #fff; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
         .tab.active { background: #111; color: #fff; }
@@ -20,14 +18,50 @@
         .panel.active { display: block; }
         table { width: 100%; border-collapse: collapse; font-size: 14px; }
         th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f9f9f9; font-weight: 600; }
+        th { background: #f9f9f9; font-weight: 600; position: sticky; top: 0; }
+        tr:hover { background: #f5f5f5; }
         .search { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 15px; }
+        .notification { position: fixed; top: 20px; right: 20px; background: #111; color: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); animation: slideIn 0.3s ease; z-index: 1000; max-width: 400px; }
+        .notification.email { background: #2563eb; }
+        .notification.view { background: #7c3aed; }
+        .notification.download { background: #059669; }
+        .notification .close { position: absolute; top: 5px; right: 10px; cursor: pointer; opacity: 0.7; }
+        .notification .close:hover { opacity: 1; }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
         .stat-card { background: #f9f9f9; padding: 15px; border-radius: 6px; text-align: center; }
         .stat-card .value { font-size: 24px; font-weight: 700; color: #111; }
         .stat-card .label { font-size: 12px; color: #666; margin-top: 5px; }
         .empty { text-align: center; padding: 40px; color: #999; }
-        .validator-section { max-width: 800px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .status-dot.live { background: #22c55e; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .live-indicator { display: flex; align-items: center; font-size: 12px; color: #666; margin-bottom: 15px; }
+        .deal-card { background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+        .deal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .deal-title { font-weight: 600; font-size: 16px; }
+        .deal-business { color: #6b7280; font-size: 14px; }
+        .funnel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .funnel-step { text-align: center; padding: 10px; background: #f9fafb; border-radius: 6px; }
+        .funnel-step .count { font-size: 20px; font-weight: 700; }
+        .funnel-step .label { font-size: 11px; color: #6b7280; margin-top: 4px; }
+        .funnel-step.email { border-left: 3px solid #2563eb; }
+        .funnel-step.view { border-left: 3px solid #7c3aed; }
+        .funnel-step.download { border-left: 3px solid #059669; }
+        .recipients-list { margin-top: 12px; max-height: 200px; overflow-y: auto; }
+        .recipient-row { display: flex; align-items: center; padding: 8px; border-bottom: 1px solid #f3f4f6; font-size: 13px; }
+        .recipient-row:last-child { border-bottom: none; }
+        .recipient-name { flex: 1; font-weight: 500; }
+        .recipient-status { display: flex; gap: 8px; }
+        .status-badge { padding: 2px 8px; border-radius: 4px; font-size: 11px; }
+        .status-badge.opened { background: #dbeafe; color: #1d4ed8; }
+        .status-badge.viewed { background: #ede9fe; color: #6d28d9; }
+        .status-badge.downloaded { background: #d1fae5; color: #047857; }
+        .status-badge.pending { background: #f3f4f6; color: #9ca3af; }
+        .timestamp { font-size: 11px; color: #9ca3af; }
+        .expand-btn { background: none; border: 1px solid #e5e7eb; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .expand-btn:hover { background: #f9fafb; }
+        .notification-container { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 10px; }
         .upload-btn { background: #111; color: #fff; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
         .upload-btn:hover { background: #333; }
         .result-card { border-radius: 6px; padding: 15px; margin-bottom: 10px; }
@@ -43,6 +77,11 @@
     <div class="container">
         <h1>📊 Analytics Dashboard</h1>
         
+        <div class="live-indicator">
+            <span class="status-dot live"></span>
+            Real-time tracking active
+        </div>
+
         <div class="stats">
             <div class="stat-card">
                 <div class="value" id="total-deals">0</div>
@@ -63,34 +102,29 @@
         </div>
 
         <div class="tabs">
-            <div class="tab active" data-tab="validator">PDF Validator</div>
+            <div class="tab active" data-tab="deals">By Deal</div>
             <div class="tab" data-tab="opens">Email Opens</div>
             <div class="tab" data-tab="views">PDF Views</div>
-            <div class="tab" data-tab="downloads">Downloads</div>
+            <div class="tab" data-tab="downloads">PDF Downloads</div>
+            <div class="tab" data-tab="validator">PDF Validator</div>
         </div>
 
-        <!-- PDF Validator Panel -->
-        <div class="panel active" id="validator-panel">
-            <div class="validator-section">
-                <h2>🔐 PDF Integrity Checker</h2>
-                <p style="color: #666; margin-bottom: 20px;">Upload encrypted PDFs to verify 6-layer integrity</p>
-                
-                <input type="file" id="pdfFiles" multiple accept=".pdf" style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
-                <button onclick="checkPDFs()" class="upload-btn">Check Files</button>
-                
-                <div id="results" style="margin-top: 20px;"></div>
-            </div>
+        <div class="panel active" id="deals-panel">
+            <input type="text" class="search" placeholder="Filter by deal ID or business name..." id="deals-search">
+            <div id="deals-container"></div>
         </div>
 
         <div class="panel" id="opens-panel">
-            <input type="text" class="search" placeholder="Filter..." id="opens-search">
+            <input type="text" class="search" placeholder="Filter by deal ID, lender, or business..." id="opens-search">
             <table>
                 <thead>
                     <tr>
                         <th>Deal ID</th>
-                        <th>Business</th>
+                        <th>Business Name</th>
                         <th>Lender</th>
                         <th>Opened At</th>
+                        <th>IP</th>
+                        <th>User Agent</th>
                     </tr>
                 </thead>
                 <tbody id="opens-table"></tbody>
@@ -98,14 +132,16 @@
         </div>
 
         <div class="panel" id="views-panel">
-            <input type="text" class="search" placeholder="Filter..." id="views-search">
+            <input type="text" class="search" placeholder="Filter by token, deal, or business..." id="views-search">
             <table>
                 <thead>
                     <tr>
                         <th>Token</th>
                         <th>Deal ID</th>
+                        <th>Business Name</th>
                         <th>Lender</th>
                         <th>Viewed At</th>
+                        <th>IP</th>
                     </tr>
                 </thead>
                 <tbody id="views-table"></tbody>
@@ -113,29 +149,48 @@
         </div>
 
         <div class="panel" id="downloads-panel">
-            <input type="text" class="search" placeholder="Filter..." id="downloads-search">
+            <input type="text" class="search" placeholder="Filter by token, deal, or business..." id="downloads-search">
             <table>
                 <thead>
                     <tr>
                         <th>Token</th>
                         <th>Deal ID</th>
+                        <th>Business Name</th>
                         <th>Lender</th>
                         <th>Downloaded At</th>
+                        <th>IP</th>
                     </tr>
                 </thead>
                 <tbody id="downloads-table"></tbody>
             </table>
         </div>
+
+        <div class="panel" id="validator-panel">
+            <h2 style="margin-bottom: 15px;">🔐 PDF Integrity Checker</h2>
+            <p style="color: #666; margin-bottom: 20px;">Upload encrypted PDFs to verify 6-layer integrity</p>
+            
+            <input type="file" id="pdfFiles" multiple accept=".pdf" style="margin-bottom: 15px; padding: 10px; border: 1px solid #ddd; border-radius: 6px; width: 100%;">
+            <button onclick="checkPDFs()" class="upload-btn">Check Files</button>
+            
+            <div id="results" style="margin-top: 20px;"></div>
+        </div>
     </div>
 
+    <div class="notification-container" id="notifications"></div>
+
     <script>
+        // Configuration - UPDATE THESE
         const SUPABASE_URL = 'YOUR_SUPABASE_URL';
         const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        // Initialize Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // Data stores
         let emailOpens = [];
         let pdfViews = [];
         let pdfDownloads = [];
+        let deals = {};
 
         // Tab switching
         document.querySelectorAll('.tab').forEach(tab => {
@@ -209,35 +264,410 @@
             }
         }
 
-        // Load data
-        async function loadData() {
-            const { data: opens } = await supabase.from('email_opens').select('*').order('opened_at', { ascending: false });
-            const { data: views } = await supabase.from('pdf_views').select('*').order('id', { ascending: false });
-            const { data: downloads } = await supabase.from('pdf_downloads').select('*').order('downloaded_at', { ascending: false });
-            
-            emailOpens = opens || [];
-            pdfViews = views || [];
-            pdfDownloads = downloads || [];
-            
-            document.getElementById('total-opens').textContent = emailOpens.length;
-            document.getElementById('total-views').textContent = pdfViews.length;
-            document.getElementById('total-downloads').textContent = pdfDownloads.length;
-            
-            // Render tables
-            document.getElementById('opens-table').innerHTML = emailOpens.map(r => `
-                <tr><td>${r.deal_id || '-'}</td><td>${r.business_name || '-'}</td><td>${r.lender_name || '-'}</td><td>${new Date(r.opened_at).toLocaleString()}</td></tr>
-            `).join('') || '<tr><td colspan="4" class="empty">No data</td></tr>';
-            
-            document.getElementById('views-table').innerHTML = pdfViews.map(r => `
-                <tr><td>${r.token || '-'}</td><td>${r.deal_id || '-'}</td><td>${r.lender_name || '-'}</td><td>${new Date(r.viewed_at || r.time).toLocaleString()}</td></tr>
-            `).join('') || '<tr><td colspan="4" class="empty">No data</td></tr>';
-            
-            document.getElementById('downloads-table').innerHTML = pdfDownloads.map(r => `
-                <tr><td>${r.token || '-'}</td><td>${r.deal_id || '-'}</td><td>${r.lender_name || '-'}</td><td>${new Date(r.downloaded_at).toLocaleString()}</td></tr>
-            `).join('') || '<tr><td colspan="4" class="empty">No data</td></tr>';
+        // Notification system
+        function showNotification(message, type = 'email') {
+            const container = document.getElementById('notifications');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            notif.innerHTML = `
+                <span class="close" onclick="this.parentElement.remove()">×</span>
+                ${message}
+            `;
+            container.appendChild(notif);
+            setTimeout(() => notif.remove(), 8000);
         }
 
-        loadData();
+        // Build deal structure
+        function buildDealsStructure() {
+            deals = {};
+            
+            // Process email opens
+            emailOpens.forEach(open => {
+                const dealId = open.deal_id;
+                if (!dealId) return;
+                
+                if (!deals[dealId]) {
+                    deals[dealId] = {
+                        deal_id: dealId,
+                        business_name: open.business_name || 'Unknown',
+                        recipients: {},
+                        total_opens: 0,
+                        total_views: 0,
+                        total_downloads: 0
+                    };
+                }
+                
+                const lender = open.lender_name || open.recipient_email || 'Unknown';
+                if (!deals[dealId].recipients[lender]) {
+                    deals[dealId].recipients[lender] = {
+                        name: lender,
+                        email_opened: null,
+                        pdf_viewed: null,
+                        pdf_downloaded: null
+                    };
+                }
+                
+                if (!deals[dealId].recipients[lender].email_opened || 
+                    new Date(open.opened_at) < new Date(deals[dealId].recipients[lender].email_opened)) {
+                    deals[dealId].recipients[lender].email_opened = open.opened_at;
+                }
+                deals[dealId].total_opens++;
+                
+                if (open.business_name) {
+                    deals[dealId].business_name = open.business_name;
+                }
+            });
+            
+            // Process PDF views
+            pdfViews.forEach(view => {
+                const dealId = view.deal_id;
+                if (!dealId) return;
+                
+                if (!deals[dealId]) {
+                    deals[dealId] = {
+                        deal_id: dealId,
+                        business_name: view.business_name || 'Unknown',
+                        recipients: {},
+                        total_opens: 0,
+                        total_views: 0,
+                        total_downloads: 0
+                    };
+                }
+                
+                const lender = view.lender_name || view.recipient_email || 'Unknown';
+                if (!deals[dealId].recipients[lender]) {
+                    deals[dealId].recipients[lender] = {
+                        name: lender,
+                        email_opened: null,
+                        pdf_viewed: null,
+                        pdf_downloaded: null
+                    };
+                }
+                
+                const viewTime = view.viewed_at || view.time;
+                if (!deals[dealId].recipients[lender].pdf_viewed || 
+                    new Date(viewTime) < new Date(deals[dealId].recipients[lender].pdf_viewed)) {
+                    deals[dealId].recipients[lender].pdf_viewed = viewTime;
+                }
+                deals[dealId].total_views++;
+                
+                if (view.business_name) {
+                    deals[dealId].business_name = view.business_name;
+                }
+            });
+            
+            // Process PDF downloads
+            pdfDownloads.forEach(download => {
+                const dealId = download.deal_id;
+                if (!dealId) return;
+                
+                if (!deals[dealId]) {
+                    deals[dealId] = {
+                        deal_id: dealId,
+                        business_name: download.business_name || 'Unknown',
+                        recipients: {},
+                        total_opens: 0,
+                        total_views: 0,
+                        total_downloads: 0
+                    };
+                }
+                
+                const lender = download.lender_name || download.recipient_email || 'Unknown';
+                if (!deals[dealId].recipients[lender]) {
+                    deals[dealId].recipients[lender] = {
+                        name: lender,
+                        email_opened: null,
+                        pdf_viewed: null,
+                        pdf_downloaded: null
+                    };
+                }
+                
+                if (!deals[dealId].recipients[lender].pdf_downloaded || 
+                    new Date(download.downloaded_at) < new Date(deals[dealId].recipients[lender].pdf_downloaded)) {
+                    deals[dealId].recipients[lender].pdf_downloaded = download.downloaded_at;
+                }
+                deals[dealId].total_downloads++;
+                
+                if (download.business_name) {
+                    deals[dealId].business_name = download.business_name;
+                }
+            });
+        }
+
+        // Render deals view
+        function renderDeals() {
+            buildDealsStructure();
+            const container = document.getElementById('deals-container');
+            const dealIds = Object.keys(deals).sort((a, b) => b - a);
+            
+            if (!dealIds.length) {
+                container.innerHTML = '<div class="empty">No deals with tracking data yet</div>';
+                return;
+            }
+            
+            container.innerHTML = dealIds.map(dealId => {
+                const deal = deals[dealId];
+                const recipients = Object.values(deal.recipients);
+                const uniqueOpens = recipients.filter(r => r.email_opened).length;
+                const uniqueViews = recipients.filter(r => r.pdf_viewed).length;
+                const uniqueDownloads = recipients.filter(r => r.pdf_downloaded).length;
+                
+                return `
+                    <div class="deal-card" data-deal="${dealId}">
+                        <div class="deal-header">
+                            <div>
+                                <div class="deal-title">Deal #${dealId}</div>
+                                <div class="deal-business">${deal.business_name}</div>
+                            </div>
+                            <button class="expand-btn" onclick="toggleRecipients('${dealId}')">
+                                ${recipients.length} recipients ▼
+                            </button>
+                        </div>
+                        <div class="funnel">
+                            <div class="funnel-step email">
+                                <div class="count">${uniqueOpens}/${recipients.length}</div>
+                                <div class="label">Email Opens</div>
+                            </div>
+                            <div class="funnel-step view">
+                                <div class="count">${uniqueViews}/${recipients.length}</div>
+                                <div class="label">PDF Views</div>
+                            </div>
+                            <div class="funnel-step download">
+                                <div class="count">${uniqueDownloads}/${recipients.length}</div>
+                                <div class="label">Downloads</div>
+                            </div>
+                        </div>
+                        <div class="recipients-list" id="recipients-${dealId}" style="display: none;">
+                            ${recipients.map(r => `
+                                <div class="recipient-row">
+                                    <div class="recipient-name">${r.name}</div>
+                                    <div class="recipient-status">
+                                        ${r.email_opened 
+                                            ? `<span class="status-badge opened" title="${new Date(r.email_opened).toLocaleString()}">✓ Opened</span>`
+                                            : '<span class="status-badge pending">— Email</span>'}
+                                        ${r.pdf_viewed 
+                                            ? `<span class="status-badge viewed" title="${new Date(r.pdf_viewed).toLocaleString()}">✓ Viewed</span>`
+                                            : '<span class="status-badge pending">— PDF</span>'}
+                                        ${r.pdf_downloaded 
+                                            ? `<span class="status-badge downloaded" title="${new Date(r.pdf_downloaded).toLocaleString()}">✓ Downloaded</span>`
+                                            : '<span class="status-badge pending">— DL</span>'}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            document.getElementById('total-deals').textContent = dealIds.length;
+        }
+
+        function toggleRecipients(dealId) {
+            const el = document.getElementById(`recipients-${dealId}`);
+            el.style.display = el.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function renderOpens() {
+            const tbody = document.getElementById('opens-table');
+            if (!emailOpens.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">No email opens yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = emailOpens.map(row => `
+                <tr>
+                    <td>${row.deal_id || '-'}</td>
+                    <td>${row.business_name || '-'}</td>
+                    <td>${row.lender_name || '-'}</td>
+                    <td>${new Date(row.opened_at).toLocaleString()}</td>
+                    <td>${row.ip || '-'}</td>
+                    <td title="${row.user_agent || ''}">${(row.user_agent || '').substring(0, 40)}...</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('total-opens').textContent = emailOpens.length;
+        }
+
+        function renderViews() {
+            const tbody = document.getElementById('views-table');
+            if (!pdfViews.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">No PDF views yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = pdfViews.map(row => `
+                <tr>
+                    <td>${row.token || '-'}</td>
+                    <td>${row.deal_id || '-'}</td>
+                    <td>${row.business_name || '-'}</td>
+                    <td>${row.lender_name || '-'}</td>
+                    <td>${new Date(row.viewed_at || row.time).toLocaleString()}</td>
+                    <td>${row.ip || '-'}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('total-views').textContent = pdfViews.length;
+        }
+
+        function renderDownloads() {
+            const tbody = document.getElementById('downloads-table');
+            if (!pdfDownloads.length) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">No PDF downloads yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = pdfDownloads.map(row => `
+                <tr>
+                    <td>${row.token || '-'}</td>
+                    <td>${row.deal_id || '-'}</td>
+                    <td>${row.business_name || '-'}</td>
+                    <td>${row.lender_name || '-'}</td>
+                    <td>${new Date(row.downloaded_at).toLocaleString()}</td>
+                    <td>${row.ip || '-'}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('total-downloads').textContent = pdfDownloads.length;
+        }
+
+        async function loadInitialData() {
+            try {
+                const { data: opens, error: opensError } = await supabase
+                    .from('email_opens')
+                    .select('*')
+                    .order('opened_at', { ascending: false });
+                if (opensError) console.error('Error loading email opens:', opensError);
+                emailOpens = opens || [];
+                
+                const { data: views, error: viewsError } = await supabase
+                    .from('pdf_views')
+                    .select('*')
+                    .order('id', { ascending: false });
+                if (viewsError) console.error('Error loading PDF views:', viewsError);
+                pdfViews = views || [];
+                
+                const { data: downloads, error: downloadsError } = await supabase
+                    .from('pdf_downloads')
+                    .select('*')
+                    .order('downloaded_at', { ascending: false });
+                if (downloadsError) console.error('Error loading PDF downloads:', downloadsError);
+                pdfDownloads = downloads || [];
+                
+                console.log('Initial data loaded:', {
+                    emailOpens: emailOpens.length,
+                    pdfViews: pdfViews.length,
+                    pdfDownloads: pdfDownloads.length
+                });
+                
+                renderDeals();
+                renderOpens();
+                renderViews();
+                renderDownloads();
+                
+            } catch (e) {
+                console.error('Failed to load initial data:', e);
+            }
+        }
+
+        function setupRealtimeSubscriptions() {
+            const emailChannel = supabase
+                .channel('email_opens_changes')
+                .on('postgres_changes', 
+                    { event: 'INSERT', schema: 'public', table: 'email_opens' },
+                    (payload) => {
+                        console.log('Email open received:', payload);
+                        const newOpen = payload.new;
+                        emailOpens.unshift(newOpen);
+                        
+                        const lender = newOpen.lender_name || 'Unknown';
+                        const dealId = newOpen.deal_id || 'Unknown';
+                        const business = newOpen.business_name || '';
+                        showNotification(
+                            `📧 <strong>${lender}</strong> opened email for Deal #${dealId}${business ? ` - ${business}` : ''}`,
+                            'email'
+                        );
+                        
+                        renderDeals();
+                        renderOpens();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('Email opens subscription status:', status);
+                });
+
+            const viewsChannel = supabase
+                .channel('pdf_views_changes')
+                .on('postgres_changes', 
+                    { event: 'INSERT', schema: 'public', table: 'pdf_views' },
+                    (payload) => {
+                        console.log('PDF view received:', payload);
+                        const newView = payload.new;
+                        pdfViews.unshift(newView);
+                        
+                        const lender = newView.lender_name || 'Unknown';
+                        const dealId = newView.deal_id || 'Unknown';
+                        const business = newView.business_name || '';
+                        const token = newView.token ? newView.token.substring(0, 8) + '...' : '';
+                        showNotification(
+                            `👁️ <strong>${lender}</strong> viewed PDF ${token} for Deal #${dealId}${business ? ` - ${business}` : ''}`,
+                            'view'
+                        );
+                        
+                        renderDeals();
+                        renderViews();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('PDF views subscription status:', status);
+                });
+
+            const downloadsChannel = supabase
+                .channel('pdf_downloads_changes')
+                .on('postgres_changes', 
+                    { event: 'INSERT', schema: 'public', table: 'pdf_downloads' },
+                    (payload) => {
+                        console.log('PDF download received:', payload);
+                        const newDownload = payload.new;
+                        pdfDownloads.unshift(newDownload);
+                        
+                        const lender = newDownload.lender_name || 'Unknown';
+                        const dealId = newDownload.deal_id || 'Unknown';
+                        const business = newDownload.business_name || '';
+                        const token = newDownload.token ? newDownload.token.substring(0, 8) + '...' : '';
+                        showNotification(
+                            `⬇️ <strong>${lender}</strong> downloaded PDF ${token} for Deal #${dealId}${business ? ` - ${business}` : ''}`,
+                            'download'
+                        );
+                        
+                        renderDeals();
+                        renderDownloads();
+                    }
+                )
+                .subscribe((status) => {
+                    console.log('PDF downloads subscription status:', status);
+                });
+        }
+
+        ['deals', 'opens', 'views', 'downloads'].forEach(type => {
+            document.getElementById(`${type}-search`).addEventListener('input', (e) => {
+                const filter = e.target.value.toLowerCase();
+                
+                if (type === 'deals') {
+                    const cards = document.querySelectorAll('.deal-card');
+                    cards.forEach(card => {
+                        card.style.display = card.textContent.toLowerCase().includes(filter) ? '' : 'none';
+                    });
+                } else {
+                    const rows = document.querySelectorAll(`#${type}-table tr`);
+                    rows.forEach(row => {
+                        row.style.display = row.textContent.toLowerCase().includes(filter) ? '' : 'none';
+                    });
+                }
+            });
+        });
+
+        loadInitialData();
+        setupRealtimeSubscriptions();
     </script>
 </body>
 </html>
